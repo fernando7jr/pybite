@@ -104,6 +104,49 @@ persist_header=True)
 ["out/test.chunk0000.txt", "out/test.chunk0001.txt"]
 ```
 
+### join_file_chunks
+
+Join chunk files into a single line stream.
+
+Join the files created by split_by_lines into a iterable of
+str lines and read ordered by name. 
+Chunks not found will throw an error if ignore_missing_chunks is not False.
+
+Avoid saving different files chunks into the same directory.
+
+#### Parameters
+
+**files_path**: *str*
+
+The path to a directory containing the chunk files or a list of the path to the files.
+
+**encoding**: *str* optional, defaults *None*
+
+The input file encoding. 
+The chunks will be saved using the same encoding.
+
+**persisted_header**: *bool* optional, defaults *False*
+
+Whether a header was persisted on each chunk or not. 
+If persisted_header is True and header is None, 
+the firt line of teh first file will be read as the actual header.
+
+**header**: *str* optional, defaults *None*
+
+A header to be read at the start of the first file.
+If persisted_header is True and header is None, 
+the firt line of teh first file will be read as the actual header.
+
+**ignore_missing_chunks**: *bool* optional, defaults *"False*
+
+Flag to ignore missing chunks.
+
+#### Returns
+
+**iter**
+    
+An iterable to the lines of the files (read in the order).
+
 ## Test
 
 Test are handled by [PyTest](https://pypi.org/project/pytest/) and are included inside the folder `test`.

@@ -35,5 +35,22 @@ def test_split_by_lines(tmpdir):
             *data[i * 4:(i+ 1) * 4]
         ]
         with open(file_name, "r") as f:
-            assert f.read() == "\n".join(_chunk_data) + "\n"
+            assert f.read().strip() == "\n".join(_chunk_data)
     pass
+
+
+def test_join_file_chunks(tmpdir):
+    header, data = test_data[0], test_data[1:]
+    for i in range(0, 3):
+        f = tmpdir.join(f"test.chunk{i:04d}.txt")
+        _chunk_data = "\n".join([
+            header,
+            *data[i * 4:(i+ 1) * 4]
+        ])
+        f.write(_chunk_data)
+    actual_data = "\n".join(test_data)
+    lines_iter = join_file_chunks(tmpdir.strpath, persisted_header=True)
+    joined_lines = "".join(lines_iter)
+    print("A:\t", actual_data)
+    print("J:\t", joined_lines)
+    assert actual_data == joined_lines

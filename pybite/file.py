@@ -1,6 +1,10 @@
 """File spliting, separation and joining"""
 import os
+import re
 from .iterate import iterate_by
+
+
+__chunk_pattern = re.compile(r".chunk[0-9]+.")
 
 
 def __line_generator(f):
@@ -22,6 +26,22 @@ def __get_file_name(file_name: str, chunk: int, ext: str, chunk_format=None):
     chunk_format = f"{{0:{chunk_format}}}"
     file_name = f"{file_name}.chunk{chunk_format}{ext}"
     return file_name.format(chunk)
+
+
+def __is_chunk_file(file_name: str):
+    return len(re.findall(__chunk_pattern, file_name)) > 0
+
+
+def __get_files_in_directory(dir_path: str):
+    files_path = filter(lambda p: __is_chunk_file(p), os.listdir(dir_path))
+    files_path = map(lambda p: os.path.join(dir_path, p), files_path)
+    return filter(lambda p: os.path.isfile(p), files_path)
+
+
+def __get_chunk_id(file_name: str) -> str:
+    matches = re.findall(__chunk_pattern, file_name)
+    assert len(matches) > 0, f"File \"{file_name}\" is not a chunk"
+    return int(matches[-1][6:-1])
 
 
 def split_by_lines(
@@ -96,7 +116,6 @@ def split_by_lines(
         # Generate the chunk_name
         chunk_name = __get_file_name(output_base_name, chunk_id, output_base_ext, 
         chunk_format=chunk_name_format)
-        print(chunk_name, lines, chunk)
 
         # Join with the output_path and write the chunk
         output_file_name = os.path.join(output_path, chunk_name)
@@ -109,3 +128,67 @@ def split_by_lines(
         chunk_files.append(output_file_name)
     file_stream.close()
     return chunk_files
+
+
+def join_file_chunks(files_path: str, encoding=None, persisted_header=False, 
+    header=None, ignore_missing_chunks=False):
+    """
+    Join chunk files into a single line stream.
+
+    Join the files created by split_by_lines into a iterable of
+    str lines and read ordered by name. 
+    Chunks not found will throw an error if ignore_missing_chunks is not False.
+    
+    Avoid saving different files chunks into the same directory.
+
+    Parameters
+    ----------
+    files_path : str, Sequence[str]
+        The path to a directory containing the chunk files or 
+        a list of the path to the files.
+    encoding : str optional, defaults None
+        The input file encoding.
+    persisted_header : bool optional, defaults False
+        Whether a header was persisted on each chunk or not. 
+        If persisted_header is True and header is None, 
+        the firt line of teh first file will be read as the actual header.
+    header : str optional, defaults None
+        A header to be read at the start of the first file.
+        If persisted_header is True and header is None, 
+        the firt line of teh first file will be read as the actual header.
+    ignore_missing_chunks : bool optional, defaults False
+        Flag to ignore missing chunks.
+    Returns
+    -------
+    iter
+        An iterable to the lines of the files (read in the order).
+    """
+
+    if type(files_path) is str and os.path.isdir(files_path):
+        files_path = sorted(__get_files_in_directory(files_path))
+        print(files_path)
+    current_id = 0
+    caret_return = ""
+    for file_name in files_path:
+        file_id = __get_chunk_id(file_name)
+        if not ignore_missing_chunks and current_id != file_id:
+            raise AssertionError(f"Chunk {current_id} not found!") 
+        with open(file_name, "r", encoding=encoding) as f:
+            if persisted_header:
+                if current_id == 0:
+                    if header:
+                        yield header
+                    else:
+                        yield f.readline()
+                else:
+                    # Discard the first line
+                    f.readline()
+            while True:
+                line = f.readline()
+                if not line:
+                    break
+                else:
+                    yield caret_return + line
+                caret_return = ""
+        caret_return = "\n"
+        current_id += 1
