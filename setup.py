@@ -8,7 +8,7 @@ setup(
     packages = [
         'pybite',
     ],
-    version = '1.0.1',
+    version = '1.1.0',
     description = 'Chunk by chunk iteration made easier',
     long_description=long_description,
     long_description_content_type="text/markdown",

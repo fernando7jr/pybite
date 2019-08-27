@@ -42,7 +42,7 @@ def split_by_lines(
         The path to the directory where the chunks will be stored.
     lines : int
         The quantity of lines on each chunk file. 
-        If included the header the total will be lines + 1
+        If included the header the total will be lines + 1.
     encoding : str optional, defaults None
         The input file encoding. 
         The chunks will be saved using the same encoding.
