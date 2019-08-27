@@ -44,7 +44,7 @@ def __get_chunk_id(file_name: str) -> str:
     return int(matches[-1][6:-1])
 
 
-def split_by_lines(
+def split_file_by_lines(
     file_stream, output_path: str, lines: int, 
     encoding=None, persist_header=False, header=None,
     chunk_name_format="04d") -> list:
@@ -85,10 +85,10 @@ def split_by_lines(
     with open("test.txt", "w", encoding="utf-8") as f:
         f.write("Symbols\nAyp\nBx\nCC\nDt")
     
-    >>> split_by_lines("test.txt", "out", 2, encoding="utf-8")
+    >>> split_file_by_lines("test.txt", "out", 2, encoding="utf-8")
     ["out/test.chunk0000.txt", "out/test.chunk0001.txt", 
     "out/test.chunk0002.txt"]
-    >>> split_by_lines("test.txt", "out", 2, encoding="utf-8", 
+    >>> split_file_by_lines("test.txt", "out", 2, encoding="utf-8", 
     persist_header=True)
     ["out/test.chunk0000.txt", "out/test.chunk0001.txt"]
     """
@@ -135,7 +135,7 @@ def join_file_chunks(files_path: str, encoding=None, persisted_header=False,
     """
     Join chunk files into a single line stream.
 
-    Join the files created by split_by_lines into a iterable of
+    Join the files created by split_file_by_lines into a iterable of
     str lines and read ordered by name. 
     Chunks not found will throw an error if ignore_missing_chunks is not False.
     

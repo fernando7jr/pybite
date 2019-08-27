@@ -41,7 +41,7 @@ iter([[1, 2], [3, 4], [5])
 iter([[2, 4], [6, 8], [10])
 ```
 
-### split_by_lines
+### split_file_by_lines
 
 Split a file into multiple files and store them in the output path.
 
