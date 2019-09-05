@@ -15,14 +15,14 @@ test_data = [
 ]
 
 
-def test_split_by_lines(tmpdir):
+def test_split_file_by_lines(tmpdir):
     input_path = tmpdir.join("test.txt").strpath
     output_path = tmpdir.mkdir("out").join("").strpath
     
     with open(input_path, "w") as f:
         f.write("\n".join(test_data))
 
-    chunk_files = split_by_lines(input_path, output_path, 4, 
+    chunk_files = split_file_by_lines(input_path, output_path, 4, 
     persist_header=True)
 
     assert len(chunk_files) == 3
@@ -51,6 +51,4 @@ def test_join_file_chunks(tmpdir):
     actual_data = "\n".join(test_data)
     lines_iter = join_file_chunks(tmpdir.strpath, persisted_header=True)
     joined_lines = "".join(lines_iter)
-    print("A:\t", actual_data)
-    print("J:\t", joined_lines)
     assert actual_data == joined_lines
