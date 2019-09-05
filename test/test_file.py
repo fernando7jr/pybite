@@ -15,6 +15,16 @@ test_data = [
 ]
 
 
+def test_iterate_file_by_lines(tmpdir):
+    input_path = tmpdir.join("test.txt").strpath
+    
+    with open(input_path, "w") as f:
+        f.write("\n".join(test_data))
+
+    lines = iterate_file_by_lines(input_path, strip_end=True)
+    assert "\n".join(test_data) == "\n".join(lines)
+
+
 def test_split_file_by_lines(tmpdir):
     input_path = tmpdir.join("test.txt").strpath
     output_path = tmpdir.mkdir("out").join("").strpath
