@@ -2,7 +2,7 @@
 from ._open import _open_file
 
 
-def iterate_file_by_lines(file_stream, strip_end=False):
+def iterate_file_by_lines(file_stream, encoding=None, strip_end=False):
     """
     Return a iterator of file lines.
 
@@ -13,6 +13,9 @@ def iterate_file_by_lines(file_stream, strip_end=False):
     ----------
     file_stream : str, io.StringIO
         A file path or io.StringIO instance to the file to be read.
+    encoding : str optional, defaults None
+        The input file encoding. 
+        The chunks will be saved using the same encoding.
     strip_end : bool optional, defaults False
         Flag for strip the end of each line.
         Same as calling `line.rstrip()`.
@@ -30,7 +33,7 @@ def iterate_file_by_lines(file_stream, strip_end=False):
     >>> iterate_file_by_lines("test.txt", encoding="utf-8", strip_end=True)
     iter("Symbols", "Ayp", "Bx", "CC", "Dt")
     """
-    file_stream = _open_file(file_stream)
+    file_stream = _open_file(file_stream, encoding=encoding)
     while True:
         line = file_stream.readline()
         if not line:
