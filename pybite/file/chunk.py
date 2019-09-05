@@ -1,18 +1,11 @@
 """File spliting, separation and joining"""
 import os
 import re
-from .iterate import iterate_by
+from .iterate import iterate_file_by_lines
+from ..iterate import iterate_by
 
 
 __chunk_pattern = re.compile(r".chunk[0-9]+.")
-
-
-def __line_generator(f):
-    while True:
-        line = f.readline()
-        if not line:
-            break
-        yield line
 
 
 def __ensure_dir(path: str):
@@ -111,7 +104,7 @@ def split_file_by_lines(
     
     chunk_id = 0
     chunk_files = []
-    lines_gen = __line_generator(file_stream)
+    lines_gen = iterate_file_by_lines(file_stream)
     for chunk in iterate_by(lines_gen, lines):
         # Generate the chunk_name
         chunk_name = __get_file_name(output_base_name, chunk_id, output_base_ext, 

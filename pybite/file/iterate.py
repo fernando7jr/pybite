@@ -1,3 +1,4 @@
+"""Utilities for iterating files"""
 from ._open import _open_file
 
 
