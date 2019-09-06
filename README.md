@@ -55,6 +55,51 @@ iter([[2, 4], [6, 8], [10])
 iter(["numbers", 2, 4], ["numbers", 6, 8], ["numbers", 10])
 ```
 
+### iterate_file_by_lines
+
+Return a iterator of file lines.
+
+Each line is read on-demand untill there is no more line to
+be read.
+
+#### Parameters
+    
+**iterable**: *iter*
+
+Any iterable data e.g. list, tuple, dict, iter, ...
+
+**file_stream** : *str*, *io.StringIO*
+
+A file path or io.StringIO instance to the file to be read.
+
+**encoding** : *str* optional, defaults *None*
+
+The input file encoding. 
+The chunks will be saved using the same encoding.
+
+**strip_end** : *bool* optional, defaults *False*
+
+Flag for strip the end of each line.
+Same as calling `line.rstrip()`.
+
+#### Returns
+
+**iter**
+    
+New iterable for the chunked data
+
+#### Examples
+
+```python
+with open("test.txt", "w", encoding="utf-8") as f:
+    f.write("Symbols\nAyp\nBx\nCC\nDt")
+
+>>> iterate_file_by_lines("test.txt", encoding="utf-8")
+iter("Symbols\n", "Ayp\n", "Bx\n", "CC\n", "Dt")
+>>> iterate_file_by_lines("test.txt", encoding="utf-8", strip_end=True)
+iter("Symbols", "Ayp", "Bx", "CC", "Dt")
+```
+
 ### split_file_by_lines
 
 Split a file into multiple files and store them in the output path.
