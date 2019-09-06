@@ -89,9 +89,6 @@ def split_file_by_lines(
     if type(file_stream) is str:
         file_stream = open(file_stream, "r", encoding=encoding)
     
-    if persist_header is True and header is None:
-        header = file_stream.readline()
-    
     # Prepare the output_path for later
     output_path = __ensure_dir(output_path)
     output_base_name = os.path.split(file_stream.name)[1]
@@ -105,7 +102,10 @@ def split_file_by_lines(
     chunk_id = 0
     chunk_files = []
     lines_gen = iterate_file_by_lines(file_stream)
-    for chunk in iterate_by(lines_gen, lines):
+    lines_gen = iterate_by(lines_gen, lines, 
+        persist_header=persist_header, header=header)
+
+    for chunk in lines_gen:
         # Generate the chunk_name
         chunk_name = __get_file_name(output_base_name, chunk_id, output_base_ext, 
         chunk_format=chunk_name_format)
@@ -113,12 +113,11 @@ def split_file_by_lines(
         # Join with the output_path and write the chunk
         output_file_name = os.path.join(output_path, chunk_name)
         output_stream = open(output_file_name, "w", encoding=encoding)
-        if persist_header is True and header is not None:
-            output_stream.write(header)
         output_stream.write("".join(chunk))
         output_stream.close()
         chunk_id += 1
         chunk_files.append(output_file_name)
+
     file_stream.close()
     return chunk_files
 
