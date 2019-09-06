@@ -33,7 +33,7 @@ def iterate_file_by_lines(file_stream, encoding=None, strip_end=False):
     >>> iterate_file_by_lines("test.txt", encoding="utf-8", strip_end=True)
     iter("Symbols", "Ayp", "Bx", "CC", "Dt")
     """
-    file_stream = _open_file(file_stream, encoding=encoding)
+    file_stream = _open_file(file_stream, "r", encoding=encoding)
     while True:
         line = file_stream.readline()
         if not line:
