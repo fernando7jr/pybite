@@ -1,7 +1,7 @@
 """File spliting, separation and joining"""
 import os
 import re
-from .iterate import iterate_file_by_lines
+from .iterate import iterate_file_by_lines, _open_file
 from ..iterate import iterate_by
 
 
@@ -86,8 +86,7 @@ def split_file_by_lines(
     ["out/test.chunk0000.txt", "out/test.chunk0001.txt"]
     """
 
-    if type(file_stream) is str:
-        file_stream = open(file_stream, "r", encoding=encoding)
+    file_stream = _open_file(file_stream, "r", encoding=encoding)
     
     # Prepare the output_path for later
     output_path = __ensure_dir(output_path)
