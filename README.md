@@ -26,6 +26,18 @@ The size of each chunk
 
 A map function for transform the data before dividing in chunks
 
+**persist_header**: *bool* optional, defaults *False*
+
+Whether to persist a header on each chunk or not. 
+If persist_header is True and header is None, 
+the firt line will be read as the actual header.
+
+**header**: *str* optional, defaults *None*
+
+A header to be written at the start of each file.
+If persist_header is True and header is None, 
+the firt line will be read as the actual header.
+
 #### Returns
 
 **iter**
@@ -39,6 +51,8 @@ New iterable for the chunked data
 iter([[1, 2], [3, 4], [5])
 >>> iterate_by([1, 2, 3, 4, 5], 2, map=lambda x: x * 2)
 iter([[2, 4], [6, 8], [10])
+>>> iterate_by(["numbers", 1, 2, 3, 4, 5], 2, persist_header=True)
+iter(["numbers", 2, 4], ["numbers", 6, 8], ["numbers", 10])
 ```
 
 ### split_file_by_lines
