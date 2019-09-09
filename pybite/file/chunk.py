@@ -86,6 +86,7 @@ def split_file_by_lines(
     ["out/test.chunk0000.txt", "out/test.chunk0001.txt"]
     """
 
+    # Open the file here to get the file_name later
     file_stream = _open_file(file_stream, "r", encoding=encoding)
 
     # Prepare the output_path for later

@@ -52,7 +52,7 @@ iter([[1, 2], [3, 4], [5])
 >>> iterate_by([1, 2, 3, 4, 5], 2, map=lambda x: x * 2)
 iter([[2, 4], [6, 8], [10])
 >>> iterate_by(["numbers", 1, 2, 3, 4, 5], 2, persist_header=True)
-iter(["numbers", 2, 4], ["numbers", 6, 8], ["numbers", 10])
+iter(["numbers", 1, 2], ["numbers", 3, 4], ["numbers", 5])
 ```
 
 ### iterate_file_by_lines

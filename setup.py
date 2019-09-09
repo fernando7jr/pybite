@@ -7,8 +7,9 @@ setup(
     name = 'pybite',
     packages = [
         'pybite',
+        'pybite.file'
     ],
-    version = '1.3.0',
+    version = '1.3.2',
     description = 'Chunk by chunk iteration made easier',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -28,7 +29,11 @@ setup(
         'chunk',
         'block',
         'processing',
-        'data'
+        'data',
+        'split',
+        'slice',
+        'file',
+        'buffer'
     ],
     classifiers = [
         "Programming Language :: Python :: 3",
