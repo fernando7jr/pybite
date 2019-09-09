@@ -9,7 +9,7 @@ setup(
         'pybite',
         'pybite.file'
     ],
-    version = '1.4.1',
+    version = '1.4.2',
     description = 'Chunk by chunk iteration made easier',
     long_description=long_description,
     long_description_content_type="text/markdown",
