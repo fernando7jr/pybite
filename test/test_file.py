@@ -17,7 +17,7 @@ test_data = [
 
 def test_iterate_file_by_lines(tmpdir):
     input_path = tmpdir.join("test.txt").strpath
-    
+
     with open(input_path, "w") as f:
         f.write("\n".join(test_data))
 
@@ -28,12 +28,12 @@ def test_iterate_file_by_lines(tmpdir):
 def test_split_file_by_lines(tmpdir):
     input_path = tmpdir.join("test.txt").strpath
     output_path = tmpdir.mkdir("out").join("").strpath
-    
+
     with open(input_path, "w") as f:
         f.write("\n".join(test_data))
 
-    chunk_files = split_file_by_lines(input_path, output_path, 4, 
-    persist_header=True)
+    chunk_files = split_file_by_lines(input_path, output_path, 4,
+                                      persist_header=True)
 
     assert len(chunk_files) == 3
 
@@ -42,7 +42,7 @@ def test_split_file_by_lines(tmpdir):
         file_name = chunk_files[i]
         _chunk_data = [
             header,
-            *data[i * 4:(i+ 1) * 4]
+            *data[i * 4:(i + 1) * 4]
         ]
         with open(file_name, "r") as f:
             assert f.read().strip() == "\n".join(_chunk_data)
@@ -55,10 +55,25 @@ def test_join_file_chunks(tmpdir):
         f = tmpdir.join(f"test.chunk{i:04d}.txt")
         _chunk_data = "\n".join([
             header,
-            *data[i * 4:(i+ 1) * 4]
+            *data[i * 4:(i + 1) * 4]
         ])
         f.write(_chunk_data)
     actual_data = "\n".join(test_data)
     lines_iter = join_file_chunks(tmpdir.strpath, persisted_header=True)
     joined_lines = "".join(lines_iter)
     assert actual_data == joined_lines
+
+
+def test_slice_file_by_lines(tmpdir):
+    input_path = tmpdir.join("test.txt").strpath
+
+    with open(input_path, "w") as f:
+        f.write("\n".join(test_data))
+    _slice = slice_file_by_lines(input_path, 0, 6, persist_header=True)
+    assert "".join(_slice) == "\n".join(test_data[0:7]) + "\n"
+
+    _slice = slice_file_by_lines(input_path, 3, 1)
+    assert "" == "\n".join(_slice)
+
+    _slice = slice_file_by_lines(input_path, 3, 1, persist_header=True)
+    assert "".join(_slice) == "\n".join(test_data[:1]) + "\n"
