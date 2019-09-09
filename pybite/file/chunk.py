@@ -38,9 +38,9 @@ def __get_chunk_id(file_name: str) -> str:
 
 
 def split_file_by_lines(
-    file_stream, output_path: str, lines: int, 
-    encoding=None, persist_header=False, header=None,
-    chunk_name_format="04d") -> list:
+        file_stream, output_path: str, lines: int,
+        encoding=None, persist_header=False, header=None,
+        chunk_name_format="04d") -> list:
     """
     Split a file into multiple files and store them in the output path.
 
@@ -54,18 +54,18 @@ def split_file_by_lines(
     output_path : str
         The path to the directory where the chunks will be stored.
     lines : int
-        The quantity of lines on each chunk file. 
+        The quantity of lines on each chunk file.
         If included the header the total will be lines + 1.
     encoding : str optional, defaults None
-        The input file encoding. 
+        The input file encoding.
         The chunks will be saved using the same encoding.
     persist_header : bool optional, defaults False
-        Whether to persist a header on each chunk or not. 
-        If persist_header is True and header is None, 
+        Whether to persist a header on each chunk or not.
+        If persist_header is True and header is None,
         the firt line will be read as the actual header.
     header : str optional, defaults None
         A header to be written at the start of each file.
-        If persist_header is True and header is None, 
+        If persist_header is True and header is None,
         the firt line will be read as the actual header.
     chunk_name_format : str optional, defaults "04d"
         The format string for the chunk numbers in the output file names.
@@ -77,38 +77,38 @@ def split_file_by_lines(
     --------
     with open("test.txt", "w", encoding="utf-8") as f:
         f.write("Symbols\nAyp\nBx\nCC\nDt")
-    
+
     >>> split_file_by_lines("test.txt", "out", 2, encoding="utf-8")
-    ["out/test.chunk0000.txt", "out/test.chunk0001.txt", 
+    ["out/test.chunk0000.txt", "out/test.chunk0001.txt",
     "out/test.chunk0002.txt"]
-    >>> split_file_by_lines("test.txt", "out", 2, encoding="utf-8", 
+    >>> split_file_by_lines("test.txt", "out", 2, encoding="utf-8",
     persist_header=True)
     ["out/test.chunk0000.txt", "out/test.chunk0001.txt"]
     """
 
     # Open the file here to get the file_name later
     file_stream = _open_file(file_stream, "r", encoding=encoding)
-    
+
     # Prepare the output_path for later
     output_path = __ensure_dir(output_path)
     output_base_name = os.path.split(file_stream.name)[1]
     output_base_name, output_base_ext = os.path.splitext(output_base_name)
     if output_base_ext:
         output_base_ext = "." + output_base_ext
-    
+
     # Transform chunk_name_format into a format string
     chunk_name_format = f"{{0:{chunk_name_format}}}"
-    
+
     chunk_id = 0
     chunk_files = []
     lines_gen = iterate_file_by_lines(file_stream)
-    lines_gen = iterate_by(lines_gen, lines, 
-        persist_header=persist_header, header=header)
+    lines_gen = iterate_by(lines_gen, lines,
+                           persist_header=persist_header, header=header)
 
     for chunk in lines_gen:
         # Generate the chunk_name
-        chunk_name = __get_file_name(output_base_name, chunk_id, output_base_ext, 
-        chunk_format=chunk_name_format)
+        chunk_name = __get_file_name(output_base_name, chunk_id, output_base_ext,
+                                     chunk_format=chunk_name_format)
 
         # Join with the output_path and write the chunk
         output_file_name = os.path.join(output_path, chunk_name)
@@ -122,31 +122,31 @@ def split_file_by_lines(
     return chunk_files
 
 
-def join_file_chunks(files_path: str, encoding=None, persisted_header=False, 
-    header=None, ignore_missing_chunks=False):
+def join_file_chunks(files_path: str, encoding=None, persisted_header=False,
+                     header=None, ignore_missing_chunks=False):
     """
     Join chunk files into a single line stream.
 
     Join the files created by split_file_by_lines into a iterable of
-    str lines and read ordered by name. 
+    str lines and read ordered by name.
     Chunks not found will throw an error if ignore_missing_chunks is not False.
-    
+
     Avoid saving different files chunks into the same directory.
 
     Parameters
     ----------
     files_path : str, Sequence[str]
-        The path to a directory containing the chunk files or 
+        The path to a directory containing the chunk files or
         a list of the path to the files.
     encoding : str optional, defaults None
         The input file encoding.
     persisted_header : bool optional, defaults False
-        Whether a header was persisted on each chunk or not. 
-        If persisted_header is True and header is None, 
+        Whether a header was persisted on each chunk or not.
+        If persisted_header is True and header is None,
         the firt line of teh first file will be read as the actual header.
     header : str optional, defaults None
         A header to be read at the start of the first file.
-        If persisted_header is True and header is None, 
+        If persisted_header is True and header is None,
         the firt line of teh first file will be read as the actual header.
     ignore_missing_chunks : bool optional, defaults False
         Flag to ignore missing chunks.
@@ -164,7 +164,7 @@ def join_file_chunks(files_path: str, encoding=None, persisted_header=False,
     for file_name in files_path:
         file_id = __get_chunk_id(file_name)
         if not ignore_missing_chunks and current_id != file_id:
-            raise AssertionError(f"Chunk {current_id} not found!") 
+            raise AssertionError(f"Chunk {current_id} not found!")
         with open(file_name, "r", encoding=encoding) as f:
             if persisted_header:
                 if current_id == 0:
@@ -184,3 +184,81 @@ def join_file_chunks(files_path: str, encoding=None, persisted_header=False,
                 caret_return = ""
         caret_return = "\n"
         current_id += 1
+
+
+def slice_file_by_lines(file_stream, start: int, end: int,
+                        encoding=None, persist_header=False, header=None):
+    """
+    Slice file by lines into an iterable of the sliced lines.
+
+    Returns only cut lines in iterable str format. 
+    It does not work with negative numbers.
+
+    Parameters
+    ----------
+    files_stream : str, Sequence[str]
+        The path and file to be cut.
+    start : int
+        Initial position of the cut.
+        Use positive Number.
+    end : int
+        End position of the cut.
+        Use Positive Number.
+    encoding : str optional, defaults None
+        The input file encoding.
+    persisted_header : bool optional, defaults False
+        Whether a header was persisted on each chunk or not.
+        If persisted_header is True and header is None,
+        the firt line of teh first file will be read as the actual header.
+    header : str optional, defaults None
+        A header to be read at the start of the first file.
+        If persisted_header is True and header is None,
+        the firt line of teh first file will be read as the actual header.
+    Returns
+    -------
+    iter
+        An iterable with the cut portion of the file
+
+    Examples
+    --------
+    test_data = [
+        "Name;Age;",
+        "Test;00;",
+        "Test;11;",
+        "John;22;",
+        "Test;33;",
+        "Test;44;",
+        "Test;55;",
+        "Test;66;",
+        "Test;77;",
+        "Test;88;",
+    ]
+    with open("./text.txt", "w") as f:
+        f.write("\n".join(test_data))
+        
+    >>> slice_file_by_lines(input_path, 1,2, persist_header=True)
+    iter(["Name;Age;\n", "Test;11;\n", "John;22;\n"])
+    >>> slice_file_by_lines(input_path, 1,2)
+    iter(["Test;11;\n", "John;22;\n"])
+    """
+    file_stream = _open_file(file_stream, "r", encoding=encoding)
+
+    lines_gen = iterate_file_by_lines(file_stream)
+
+    if persist_header is True and header is None:
+        header = lines_gen.__next__()
+    if end < start:
+        if persist_header is True:
+            yield header
+        return
+
+    for i, line in enumerate(lines_gen):
+        if i < start:
+            continue
+        elif i >= end:
+            break
+        elif i == start and persist_header is True:
+            yield header
+        yield line
+
+    file_stream.close()
