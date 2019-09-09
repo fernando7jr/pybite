@@ -61,11 +61,11 @@ persist_header=False, header=None) -> iter:
     Examples
     --------
     >>> iterate_by([1, 2, 3, 4, 5], 2)
-    iter([1, 2], [3, 4], [5])
+    iter([[1, 2], [3, 4], [5]])
     >>> iterate_by([1, 2, 3, 4, 5], 2, map=lambda x: x * 2)
-    iter([2, 4], [6, 8], [10])
+    iter([[2, 4], [6, 8], [10]])
     >>> iterate_by(["numbers", 1, 2, 3, 4, 5], 2, persist_header=True)
-    iter(["numbers", 1, 2], ["numbers", 3, 4], ["numbers", 5])
+    iter([["numbers", 1, 2], ["numbers", 3, 4], ["numbers", 5]])
     """
     if persist_header is True:
         if header is None:

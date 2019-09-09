@@ -48,11 +48,11 @@ New iterable for the chunked data
 
 ```python
 >>> iterate_by([1, 2, 3, 4, 5], 2)
-iter([[1, 2], [3, 4], [5])
+iter([[1, 2], [3, 4], [5]])
 >>> iterate_by([1, 2, 3, 4, 5], 2, map=lambda x: x * 2)
-iter([[2, 4], [6, 8], [10])
+iter([[2, 4], [6, 8], [10]])
 >>> iterate_by(["numbers", 1, 2, 3, 4, 5], 2, persist_header=True)
-iter(["numbers", 1, 2], ["numbers", 3, 4], ["numbers", 5])
+iter([["numbers", 1, 2], ["numbers", 3, 4], ["numbers", 5]])
 ```
 
 ### iterate_file_by_lines
@@ -95,9 +95,9 @@ with open("test.txt", "w", encoding="utf-8") as f:
     f.write("Symbols\nAyp\nBx\nCC\nDt")
 
 >>> iterate_file_by_lines("test.txt", encoding="utf-8")
-iter("Symbols\n", "Ayp\n", "Bx\n", "CC\n", "Dt")
+iter(["Symbols\n", "Ayp\n", "Bx\n", "CC\n", "Dt"])
 >>> iterate_file_by_lines("test.txt", encoding="utf-8", strip_end=True)
-iter("Symbols", "Ayp", "Bx", "CC", "Dt")
+iter(["Symbols", "Ayp", "Bx", "CC", "Dt"])
 ```
 
 ### split_file_by_lines
@@ -158,8 +158,7 @@ with open("test.txt", "w", encoding="utf-8") as f:
 >>> split_by_lines("test.txt", "out", 2, encoding="utf-8")
 ["out/test.chunk0000.txt", "out/test.chunk0001.txt", 
 "out/test.chunk0002.txt"]
->>> split_by_lines("test.txt", "out", 2, encoding="utf-8", 
-persist_header=True)
+>>> split_by_lines("test.txt", "out", 2, encoding="utf-8", persist_header=True)
 ["out/test.chunk0000.txt", "out/test.chunk0001.txt"]
 ```
 

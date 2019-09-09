@@ -29,9 +29,9 @@ def iterate_file_by_lines(file_stream, encoding=None, strip_end=False):
         f.write("Symbols\nAyp\nBx\nCC\nDt")
     
     >>> iterate_file_by_lines("test.txt", encoding="utf-8")
-    iter("Symbols\n", "Ayp\n", "Bx\n", "CC\n", "Dt")
+    iter(["Symbols\n", "Ayp\n", "Bx\n", "CC\n", "Dt"])
     >>> iterate_file_by_lines("test.txt", encoding="utf-8", strip_end=True)
-    iter("Symbols", "Ayp", "Bx", "CC", "Dt")
+    iter(["Symbols", "Ayp", "Bx", "CC", "Dt"])
     """
     file_stream = _open_file(file_stream, "r", encoding=encoding)
     while True:
